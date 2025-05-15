@@ -82,6 +82,9 @@ http://127.0.0.1:8000/docs
 -------------------------
 
 Products
+
+
+
 GET /inventory/ — List products, optionally filter by low stock.
 
 POST /products/ — Create a new product.
@@ -91,6 +94,10 @@ PUT /inventory/{product_id}/stock — Update product stock.
 GET /inventory/{product_id}/changes — Inventory change history.
 
 Sales
+
+
+
+
 GET /sales/ — List sales with filters: start_date, end_date, product_id, category.
 
 GET /sales/revenue/{period} — Revenue report by period (daily, weekly, monthly, annual).
