@@ -95,7 +95,10 @@ GET /sales/revenue/{period} — Revenue report by period (daily, weekly, monthly
 
 GET /sales/compare/revenue — Compare revenue between two date ranges.
 
+
+----------------------
 API Endpoints Details
+----------------------
 
 Product Endpoints
 
