@@ -98,6 +98,9 @@ GET /sales/compare/revenue — Compare revenue between two date ranges.
 API Endpoints Details
 
 Product Endpoints
+
+
+
     POST /products/
         Create a new product.
         Request Body: Product details (name, category, price, stock).
@@ -116,6 +119,9 @@ Product Endpoints
         Get the inventory change history for a specific product.
 
 Sales Endpoints
+
+
+
     GET /sales/
         Retrieve sales records with optional filters:
         skip (pagination offset)
