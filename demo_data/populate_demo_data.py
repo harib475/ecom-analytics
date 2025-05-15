@@ -8,18 +8,19 @@ from app.database import engine, SessionLocal
 import datetime, random
 
 def populate():
+    """
+    Populates the database with sample products, sales, and inventory changes.
+    Clears existing data before insertion to ensure fresh state.
+    """
     session = SessionLocal()
 
-    # Clear existing data in the correct order (dependents first)
     session.query(Sale).delete()
     session.query(InventoryLog).delete()
     session.query(InventoryChange).delete()
     session.query(Product).delete()
 
-    # Commit deletes before adding new data
     session.commit()
 
-    # Create some products
     products = [
         Product(name="iPhone 14", category="Electronics", price=999.99, stock=50),
         Product(name="Samsung TV", category="Electronics", price=499.99, stock=20),
@@ -29,7 +30,6 @@ def populate():
     session.add_all(products)
     session.commit()
 
-    # Add sales and inventory logs for each product
     for prod in products:
         total_sold = 0
 
@@ -38,7 +38,6 @@ def populate():
             total_price = prod.price * quantity_sold
             sale_date = datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 30))
 
-            # Add Sale record
             sale = Sale(
                 product_id=prod.id,
                 quantity=quantity_sold,
@@ -47,8 +46,7 @@ def populate():
             )
             session.add(sale)
 
-            # Add Inventory Log (stock change)
-            inventory_change = -quantity_sold  # sales reduce stock
+            inventory_change = -quantity_sold
             inventory_log = InventoryLog(
                 product_id=prod.id,
                 change=inventory_change,
@@ -57,7 +55,6 @@ def populate():
             )
             session.add(inventory_log)
 
-            # Add InventoryChange record to track stock changes over time
             previous_stock = prod.stock - total_sold
             new_stock = previous_stock + inventory_change
             inv_change = InventoryChange(
@@ -71,7 +68,6 @@ def populate():
 
             total_sold += quantity_sold
 
-        # Update product stock after all sales
         prod.stock -= total_sold
 
     session.commit()

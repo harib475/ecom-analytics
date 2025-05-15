@@ -24,6 +24,21 @@ def read_sales(
     category: Optional[str] = Query(None, description="Product category"),
     db: Session = Depends(get_db),
 ):
+    """
+    Retrieve a list of sales records with optional filters and pagination.
+
+    Args:
+        skip (int): Number of records to skip.
+        limit (int): Maximum number of records to return.
+        start_date (Optional[str]): Start date to filter sales (YYYY-MM-DD).
+        end_date (Optional[str]): End date to filter sales (YYYY-MM-DD).
+        product_id (Optional[int]): Filter by product ID.
+        category (Optional[str]): Filter by product category.
+        db (Session): Database session dependency.
+
+    Returns:
+        List[schemas.Sale]: List of sales records.
+    """
     return crud.get_sales(
         db,
         skip=skip,
@@ -41,8 +56,19 @@ def get_revenue_report(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
 ):
-    return crud.get_revenue_by_period(db, period, start_date, end_date)
+    """
+    Generate a revenue report for a specified period.
 
+    Args:
+        period (str): Time period for revenue aggregation (e.g., daily, monthly).
+        db (Session): Database session dependency.
+        start_date (Optional[date]): Optional start date filter.
+        end_date (Optional[date]): Optional end date filter.
+
+    Returns:
+        Any: Revenue data grouped by the specified period.
+    """
+    return crud.get_revenue_by_period(db, period, start_date, end_date)
 
 @router.get("/compare/revenue", response_model=schemas.RevenueComparisonResponse)
 def compare(
@@ -53,4 +79,18 @@ def compare(
     category: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
+    """
+    Compare revenue between two different date ranges, optionally filtered by category.
+
+    Args:
+        start1 (str): Start date of the first period (YYYY-MM-DD).
+        end1 (str): End date of the first period (YYYY-MM-DD).
+        start2 (str): Start date of the second period (YYYY-MM-DD).
+        end2 (str): End date of the second period (YYYY-MM-DD).
+        category (Optional[str]): Optional product category filter.
+        db (Session): Database session dependency.
+
+    Returns:
+        schemas.RevenueComparisonResponse: Revenue comparison data.
+    """
     return crud.compare_revenue(db, start1, end1, start2, end2, category)
