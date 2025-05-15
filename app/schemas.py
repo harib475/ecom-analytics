@@ -43,3 +43,17 @@ class RevenueComparisonResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class InventoryUpdateRequest(BaseModel):
+    new_stock: int
+
+class InventoryChangeResponse(BaseModel):
+    id: int
+    product_id: int
+    previous_stock: int
+    new_stock: int
+    change_amount: int
+    timestamp: datetime
+
+    class Config:
+        orm_mode = True

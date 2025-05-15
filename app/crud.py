@@ -1,4 +1,5 @@
 from datetime import date
+import datetime
 from typing import Optional
 from sqlalchemy.orm import Session
 from app import models, schemas
@@ -88,3 +89,31 @@ def get_revenue_by_period(
     ).group_by(group_by).order_by(group_by).all()
 
     return [{"period": row.period, "total_revenue": float(row.total_revenue)} for row in results]
+
+def get_product(db: Session, product_id: int):
+    return db.query(models.Product).filter(models.Product.id == product_id).first()
+
+def update_inventory(db: Session, product: models.Product, new_stock: int):
+    previous_stock = product.stock
+    change_amount = new_stock - previous_stock
+
+    # Update stock
+    product.stock = new_stock
+    db.add(product)
+
+    # Log inventory change
+    inventory_change = models.InventoryChange(
+        product_id=product.id,
+        previous_stock=previous_stock,
+        new_stock=new_stock,
+        change_amount=change_amount,
+        timestamp=datetime.datetime.utcnow()
+    )
+    db.add(inventory_change)
+    db.commit()
+    db.refresh(product)
+
+    return product
+
+def get_inventory_changes(db: Session, product_id: int):
+    return db.query(models.InventoryChange).filter(models.InventoryChange.product_id == product_id).order_by(models.InventoryChange.timestamp.desc()).all()

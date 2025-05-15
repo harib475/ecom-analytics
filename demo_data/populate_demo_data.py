@@ -3,17 +3,21 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
-from app.models import Product, Sale, InventoryLog
+from app.models import Product, Sale, InventoryLog, InventoryChange
 from app.database import engine, SessionLocal
 import datetime, random
 
 def populate():
     session = SessionLocal()
 
-    # Clear existing data (ensure dependent records are deleted first)
-    session.query(Sale).delete()  # Delete sales first
-    session.query(InventoryLog).delete()  # Delete inventory logs
-    session.query(Product).delete()  # Then delete products
+    # Clear existing data in the correct order (dependents first)
+    session.query(Sale).delete()
+    session.query(InventoryLog).delete()
+    session.query(InventoryChange).delete()
+    session.query(Product).delete()
+
+    # Commit deletes before adding new data
+    session.commit()
 
     # Create some products
     products = [
@@ -27,33 +31,49 @@ def populate():
 
     # Add sales and inventory logs for each product
     for prod in products:
+        total_sold = 0
+
         for _ in range(5):
-            # Add Sale records
+            quantity_sold = random.randint(1, 5)
+            total_price = prod.price * quantity_sold
+            sale_date = datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 30))
+
+            # Add Sale record
             sale = Sale(
-                product_id=prod.id, 
-                quantity=random.randint(1, 5),
-                total_price=prod.price * random.randint(1, 5),
-                sale_date=datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 30))
+                product_id=prod.id,
+                quantity=quantity_sold,
+                total_price=total_price,
+                sale_date=sale_date
             )
             session.add(sale)
 
-            # Add Inventory Log (Stock change)
-            # Example: A random number of units sold or restocked
-            inventory_change = random.randint(-5, 10)  # Random stock change
-            reason = "Restocked" if inventory_change > 0 else "Sold"
+            # Add Inventory Log (stock change)
+            inventory_change = -quantity_sold  # sales reduce stock
             inventory_log = InventoryLog(
-                product_id=prod.id, 
+                product_id=prod.id,
                 change=inventory_change,
-                reason=reason,
-                timestamp=sale.sale_date  # Match the inventory change with sale date
+                reason="Sold",
+                timestamp=sale_date
             )
             session.add(inventory_log)
 
-        # Update product stock after sales
-        total_sold = sum([sale.quantity for sale in session.query(Sale).filter(Sale.product_id == prod.id).all()])
-        prod.stock -= total_sold  # Adjust stock after sales
+            # Add InventoryChange record to track stock changes over time
+            previous_stock = prod.stock - total_sold
+            new_stock = previous_stock + inventory_change
+            inv_change = InventoryChange(
+                product_id=prod.id,
+                previous_stock=previous_stock,
+                new_stock=new_stock,
+                change_amount=inventory_change,
+                timestamp=sale_date
+            )
+            session.add(inv_change)
 
-    # Commit all data at once
+            total_sold += quantity_sold
+
+        # Update product stock after all sales
+        prod.stock -= total_sold
+
     session.commit()
     session.close()
 
