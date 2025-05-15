@@ -77,8 +77,10 @@ Run the data population script to add sample products and sales:
 Open the API docs in your browser:
 http://127.0.0.1:8000/docs
 
-
+-------------------------
 📘 API Endpoints Overview
+-------------------------
+
 Products
 GET /inventory/ — List products, optionally filter by low stock.
 
