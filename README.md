@@ -118,16 +118,16 @@ Product Endpoints
         Request Body: Product details (name, category, price, stock).
         Response: Created product object.
 
-    GET /products/
+    GET /inventory/
         Retrieve a list of all products.
         Optional Query: low_stock_threshold to filter products with stock less or equal to this value.
 
-    PUT /products/{product_id}/stock
+    PUT /inventory/{product_id}/stock
         Update the stock quantity of a specific product.
         Request Body: New stock quantity.
         Response: Updated product object.
 
-    GET /products/{product_id}/changes
+    GET /inventory/{product_id}/changes
         Get the inventory change history for a specific product.
 
 Sales Endpoints
