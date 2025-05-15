@@ -95,27 +95,3 @@ GET /sales/revenue/{period} — Revenue report by period (daily, weekly, monthly
 
 GET /sales/compare/revenue — Compare revenue between two date ranges.
 
-
-📁 Project Structure
-
-inventory-api/
-│
-├── app/
-│   ├── main.py
-│   ├── models.py
-│   ├── crud.py
-│   ├── schemas.py
-│   ├── database.py
-│   └── routers/
-│       ├── products.py
-│       └── sales.py
-│
-├── scripts/
-│   └── populate_data.py
-│
-├── alembic/
-│   └── versions/
-│
-├── .env
-├── requirements.txt
-└── README.md
