@@ -35,3 +35,11 @@ class InventoryChange(BaseModel):
 
     class Config:
         orm_mode = True
+
+class RevenueComparisonResponse(BaseModel):
+    period1: dict
+    period2: dict
+    difference: float
+
+    class Config:
+        orm_mode = True

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 import datetime
+from sqlalchemy import Index
 
 Base = declarative_base()
 
@@ -31,3 +32,21 @@ class InventoryChange(Base):
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     product = relationship("Product", back_populates="inventory_changes")
 
+
+class InventoryLog(Base):
+    __tablename__ = 'inventory_logs'
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey('products.id'))
+    change = Column(Integer)
+    reason = Column(String)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
+    product = relationship("Product", back_populates="logs")
+
+# Relationship in Product model
+Product.logs = relationship("InventoryLog", back_populates="product")
+
+# Add Indexes for faster querying
+Index("idx_sales_date", Sale.sale_date)
+Index("idx_product_category", Product.category)
