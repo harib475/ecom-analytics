@@ -95,3 +95,40 @@ GET /sales/revenue/{period} — Revenue report by period (daily, weekly, monthly
 
 GET /sales/compare/revenue — Compare revenue between two date ranges.
 
+API Endpoints Details
+
+Product Endpoints
+    POST /products/
+        Create a new product.
+        Request Body: Product details (name, category, price, stock).
+        Response: Created product object.
+
+    GET /products/
+        Retrieve a list of all products.
+        Optional Query: low_stock_threshold to filter products with stock less or equal to this value.
+
+    PUT /products/{product_id}/stock
+        Update the stock quantity of a specific product.
+        Request Body: New stock quantity.
+        Response: Updated product object.
+
+    GET /products/{product_id}/changes
+        Get the inventory change history for a specific product.
+
+Sales Endpoints
+    GET /sales/
+        Retrieve sales records with optional filters:
+        skip (pagination offset)
+        limit (max number of records)
+        start_date and end_date to filter sales by date range
+        product_id to filter by specific product
+        category to filter sales by product category
+
+    GET /sales/revenue/{period}
+        Get total revenue aggregated by a given period.
+        Valid periods: daily, weekly, monthly, annual.
+        Optional date range filters (start_date, end_date).
+
+    GET /sales/compare/revenue
+        Compare revenue between two different periods.
+        Query params: start1, end1, start2, end2 (date ranges), optional category filter.
